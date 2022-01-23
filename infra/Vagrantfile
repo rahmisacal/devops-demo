@@ -1,0 +1,44 @@
+BOX_IMAGE = "focal-server-cloudimg-amd64-vagrant.box"
+MASTER_IP = "10.0.3.15"
+NODE1_IP = "10.0.3.16"
+NODE2_IP = "10.0.3.17"
+
+Vagrant.configure("2") do |config|
+  config.vm.provider :virtualbox do |v|
+    v.memory = 1024
+	v.cpus = 1
+  end
+
+  config.vm.provision :shell, privileged: true, path: "common.sh"
+
+  config.vm.define "master" do |master|
+    master.vm.box = BOX_IMAGE
+	master.vm.hostname = "master"
+	master.vm.network :private_network, ip: "192.168.56.15", :netmask => "255.255.255.0", auto_config: false
+	master.vm.network :public_network, ip: MASTER_IP, :netmask => "255.255.255.0"
+	master.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--cpus", "2"]
+      vb.customize ["modifyvm", :id, "--memory", "2048"]
+    end
+    master.vm.provision "shell", privileged: false, path: "master.sh"
+  end
+
+  config.vm.define "node1" do |node1|
+    node1.vm.box = BOX_IMAGE
+	node1.vm.hostname = "node1"
+	node1.vm.network :private_network, ip: "192.168.56.16", :netmask => "255.255.255.0", auto_config: false
+	node1.vm.network :public_network, ip: NODE1_IP, :netmask => "255.255.255.0"
+	node1.vm.network "forwarded_port", guest: 30000, host: 1234
+    node1.vm.provision "shell", privileged: false, path: "node.sh"
+  end
+
+  config.vm.define "node2" do |node2|
+    node2.vm.box = BOX_IMAGE
+	node2.vm.hostname = "node2"
+	node2.vm.network :private_network, ip: "192.168.56.17", :netmask => "255.255.255.0", auto_config: false
+	node2.vm.network :public_network, ip: NODE2_IP, :netmask => "255.255.255.0"
+	node2.vm.network "forwarded_port", guest: 30000, host: 1235
+    node2.vm.provision "shell", privileged: false, path: "node.sh"
+  end
+
+end

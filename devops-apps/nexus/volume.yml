@@ -1,0 +1,14 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: nexus-volume
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 3Gi
+  storageClassName: manuel
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/node/nexus"

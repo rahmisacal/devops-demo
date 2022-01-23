@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: devops-demo
+spec:
+  generators:
+    - list:
+        elements:
+          - cluster: localhost
+            url: https://localhost:6443
+  template:
+    metadata:
+      name: '{{cluster}}-devops-demo'
+    spec:
+      project: devops-demo
+      source:
+        repoURL: https://github.com/rahmisacal/devops-demo
+        targetRevision: HEAD
+        path: springboot/deployment
+      destination:
+        server: '{{url}}'
+        namespace: devops-demo

@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld-deployment
+  template:
+    metadata:
+      labels:
+        app: helloworld-deployment
+    spec:
+      containers:
+        - name: helloworld
+          image: docker.io/rsacal/helloworld:0.0.1
+          ports:
+            - containerPort: 20001
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "jib-push-to-dockerhub"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=90.0 -Djava.security.egd=file:/dev/./urandom"
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: helloworld-service
+spec:
+  selector:
+    app: helloworld-deployment
+  ports:
+    - protocol: TCP
+      port: 20001
+      targetPort: 20001

@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nexus-claim
+spec:
+  storageClassName: manuel
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+  volumeName: nexus-volume
+  selector:
+    matchLabels:
+      name: devops
